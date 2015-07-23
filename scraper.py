@@ -4,7 +4,7 @@ import re
 import requests
 import scraperwiki
 import urllib2
-#from datetime import datetime
+from datetime import datetime
 from bs4 import BeautifulSoup
 #from dateutil.parser import parse
 

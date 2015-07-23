@@ -6,7 +6,7 @@ import scraperwiki
 import urllib2
 #from datetime import datetime
 from bs4 import BeautifulSoup
-from dateutil.parser import parse
+#from dateutil.parser import parse
 
 # Set up variables
 entity_id = "E0601_HBC_gov"

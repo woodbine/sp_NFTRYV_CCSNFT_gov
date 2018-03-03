@@ -94,7 +94,7 @@ data = []
 
 import requests
 
-html = requests.get(url, verify=False)
+html = requests.get(url, verify=True)
 soup = BeautifulSoup(html.text, 'lxml')
 
 

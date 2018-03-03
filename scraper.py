@@ -114,6 +114,22 @@ for link in links:
             if 'June' in mth:
                 csvMth = 'Q2'
                 csvYr = csvfile[-4:]
+        if 'Pay' in csvMth:
+            if '/Q' in link['href']:
+                csvMth = link['href'].split('/')[-1][:2]
+                csvYr = '20'+link['href'].split('/')[-2][2:4]
+            if 'OctoberDecember' in link['href']:
+                csvMth = 'Q4'
+                csvYr = '20'+link['href'].split('/')[-2][2:4]
+            if 'JulytoSeptember' in link['href']:
+                csvMth = 'Q3'
+                csvYr = '20'+link['href'].split('/')[-2][2:4]
+            if 'ApriltoJune' in link['href']:
+                csvMth = 'Q2'
+                csvYr = '20'+link['href'].split('/')[-2][2:4]
+            if 'January%20to%20March' in link['href']:
+                csvMth = 'Q1'
+                csvYr = '20'+link['href'].split('/')[-2][2:4]
         csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, url])
 

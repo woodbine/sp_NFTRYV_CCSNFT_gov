@@ -86,7 +86,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E0601_HBC_gov"
-url = "https://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
+url = "https://www3.halton.gov.uk:8080/Pages/councildemocracy/opendata/Payments-over-500.aspx"
 errors = 0
 data = []
 

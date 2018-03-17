@@ -93,11 +93,11 @@ data = []
 #### READ HTML 1.0
 import ssl
 import requests
-req = urllib2.Request(url)
-gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-html = urllib2.urlopen(req, context=gcontext).read()
-# html = urllib2.urlopen(url)
-soup = BeautifulSoup(html, 'lxml')
+#req = urllib2.Request(url)
+#gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+#html = urllib2.urlopen(req, context=gcontext).read()
+html = requests.get(url)
+soup = BeautifulSoup(html.text, 'lxml')
 
 
 #### SCRAPE DATA

@@ -86,16 +86,18 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E0601_HBC_gov"
-url = "https://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
+url = "http://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
 errors = 0
 data = []
 
 #### READ HTML 1.0
-
+import ssl
 import requests
-
-html = urllib2.urlopen(url)
-soup = BeautifulSoup(html.text, 'lxml')
+req = urllib2.Request(url)
+gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+html = urllib2.urlopen(req, context=gcontext).read()
+# html = urllib2.urlopen(url)
+soup = BeautifulSoup(html, 'lxml')
 
 
 #### SCRAPE DATA

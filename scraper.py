@@ -86,7 +86,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E0601_HBC_gov"
-url = "http://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
+url = "https://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
 errors = 0
 data = []
 
@@ -107,7 +107,7 @@ links = block.findAll('a')
 for link in links:
     if u'Payments over £500' in link.text:
         csvfile =  link.text.split('-')[-1]
-        url = 'http://www3.halton.gov.uk' + link['href']
+        url = 'https://www3.halton.gov.uk' + link['href']
         csvMth = csvfile.strip().split(' ')[0].strip()[:3]
         csvYr = csvfile.strip().split(' ')[-1].strip()
         if csvfile == 'September':

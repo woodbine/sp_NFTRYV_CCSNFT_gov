@@ -12,7 +12,8 @@ from bs4 import BeautifulSoup
 #### FUNCTIONS 1.2
 
 import requests    #  import requests to validate url
-
+import ssl
+ssl.OPENSSL_VERSION
 def validateFilename(filename):
     filenameregex = '^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[0-9][0-9][0-9][0-9]_[0-9QY][0-9]$'
     dateregex = '[0-9][0-9][0-9][0-9]_[0-9QY][0-9]'

@@ -2,4 +2,4 @@
 lxml==3.4.4
 cssselect==0.9.1
 beautifulsoup4
-pyOpenSSL==1.0.2g
+pyOpenSSL==17.5.0

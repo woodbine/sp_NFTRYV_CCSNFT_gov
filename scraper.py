@@ -92,16 +92,9 @@ errors = 0
 data = []
 
 #### READ HTML 1.0
-import ssl
 import requests
-import urllib3
-http = urllib3.PoolManager()
-html = http.request('GET', url)
-#req = urllib2.Request(url)
-#gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-#html = urllib2.urlopen(req, context=gcontext).read()
-#html = requests.get(url)
-soup = BeautifulSoup(html.data, 'lxml')
+html = requests.get(url)
+soup = BeautifulSoup(html.text, 'lxml')
 
 
 #### SCRAPE DATA

@@ -9,7 +9,6 @@ import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-
 #### FUNCTIONS 1.0
 
 def validateFilename(filename):
@@ -51,7 +50,7 @@ def validateURL(url):
         else:
             ext = os.path.splitext(url)[1]
         validURL = r.getcode() == 200
-        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
+        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx', '.pdf']
         return validURL, validFiletype
     except:
         print ("Error validating URL.")
@@ -82,36 +81,49 @@ def convert_mth_strings ( mth_string ):
         mth_string = mth_string.replace(k, v)
     return mth_string
 
-
 #### VARIABLES 1.0
 
-entity_id = "FTTAJX_BCPNFT_gov"
-url = "https://data.gov.uk/dataset/financial-transactions-data-smhft"
+entity_id = "NFTRYV_CCSNFT_gov"
+url = "http://www.cambscommunityservices.nhs.uk/about-us/what-we-spend-and-how-we-spend-it/-25-000-payments"
 errors = 0
 data = []
 
-
 #### READ HTML 1.0
-import requests
-html = requests.get(url)
-soup = BeautifulSoup(html.text, "lxml")
+
+html = urllib2.urlopen(url)
+soup = BeautifulSoup(html, 'lxml')
 
 
 #### SCRAPE DATA
-
-blocks = soup.find_all('div', 'dataset-resource')
+titles = []
+blocks = soup.find_all('tr', ' sfcsv')
 for block in blocks:
-    title = block.find('span', 'inner-cell').text.strip().split()
-    url = block.find_all('a')[1]['href']
-    csvMth = title[1][:3]
-    csvYr = title[2]
-    if '25' in csvYr:
-        csvYr = '20'+url.split('/')[-1].split('.')[0][-2:]
-        csvMth = url.split('/')[-1][:3]
-    if 'Apr' in csvMth and '2017' in csvYr:
-        url = block.find_all('a')[2]['href']
+    link = block.find('a', 'sfdownloadLink')['href']
+    title = block.find('td', 'sfdownloadTitle').text.strip()
+    titles.append(title)
+    csvMth = title.split()[0][:3]
+    csvYr = title.split()[1]
+    if ' & ' in title:
+        csvMth = 'Q0'
+        csvYr = '2018'
     csvMth = convert_mth_strings(csvMth.upper())
-    data.append([csvYr, csvMth, url])
+    data.append([csvYr, csvMth, link])
+blocks = soup.find_all('tr', ' sfpdf')
+for block in blocks:
+    title = block.find('td', 'sfdownloadTitle').text.strip()
+    if title not in titles:
+        link = block.find('a', 'sfdownloadLink')['href']
+        csvMth = title.split()[-2][:3]
+        csvYr = title.split()[-1]
+        if 'June and July' in title:
+            csvMth = 'Q0'
+        if 'January to March' in title:
+            csvMth = 'Q1'
+        if 'April - June' in title:
+            csvMth = 'Q2'
+        csvMth = convert_mth_strings(csvMth.upper())
+        data.append([csvYr, csvMth, link])
+
 
 #### STORE DATA 1.0
 

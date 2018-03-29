@@ -9,9 +9,8 @@ import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-#### FUNCTIONS 1.2
-
-import requests    #  import requests to validate url
+#### FUNCTIONS 1.1
+import requests
 
 def validateFilename(filename):
     filenameregex = '^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[0-9][0-9][0-9][0-9]_[0-9QY][0-9]$'
@@ -39,12 +38,12 @@ def validateFilename(filename):
 
 def validateURL(url):
     try:
-        r = requests.get(url, allow_redirects=True, timeout=20)
+        r = requests.get(url, headers=ua)
         count = 1
         while r.status_code == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = requests.get(url, allow_redirects=True, timeout=20)
+            r = requests.get(url, headers=ua)
         sourceFilename = r.headers.get('Content-Disposition')
 
         if sourceFilename:
@@ -85,53 +84,31 @@ def convert_mth_strings ( mth_string ):
 
 #### VARIABLES 1.0
 
-entity_id = "E0601_HBC_gov"
-url = "https://www3.halton.gov.uk/Pages/councildemocracy/opendata/Payments-over-500.aspx"
+entity_id = "NWR004_NR_gov"
+url = "https://www.networkrail.co.uk/who-we-are/transparency-and-ethics/transparency/datasets/"
 errors = 0
 data = []
+ua = {'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'}
 
 #### READ HTML 1.0
 import requests
-html = requests.get(url)
+html = requests.get(url, headers=ua)
 soup = BeautifulSoup(html.text, 'lxml')
 
 
 #### SCRAPE DATA
+blocks = soup.find('button', text=re.compile('Spend over ')).find_next('div').find_all('ul')
+for block in blocks:
+    links = block.find_all('a')
+    for link in links:
+        if '.csv' in link['href'] or '.xls' in link['href'] or '.xlsx' in link['href']:
+            title = link.text.strip()
+            url = link['href']
+            csvMth = title.split()[-2].strip()[:3]
+            csvYr = title.split()[-1].strip()[:4]
+            csvMth = convert_mth_strings(csvMth.upper())
+            data.append([csvYr, csvMth, url])
 
-block = soup.find('div', attrs = {'class':'ms-rtestate-field'})
-links = block.findAll('a')
-for link in links:
-    if u'Payments over £500' in link.text:
-        csvfile =  link.text.split('-')[-1]
-        url = 'https://www3.halton.gov.uk' + link['href']
-        csvMth = csvfile.strip().split(' ')[0].strip()[:3]
-        csvYr = csvfile.strip().split(' ')[-1].strip()
-        if csvfile == 'September':
-            csvMth = 'Q3'
-            csvYr = '2015'
-        if ' to ' in csvfile:
-            mth = csvfile.split('to ')[-1].split(' ')[0]
-            if 'June' in mth:
-                csvMth = 'Q2'
-                csvYr = csvfile[-4:]
-        if 'Pay' in csvMth:
-            if '/Q' in link['href']:
-                csvMth = link['href'].split('/')[-1][:2]
-                csvYr = '20'+link['href'].split('/')[-2][2:4]
-            if 'OctoberDecember' in link['href']:
-                csvMth = 'Q4'
-                csvYr = '20'+link['href'].split('/')[-2][2:4]
-            if 'JulytoSeptember' in link['href']:
-                csvMth = 'Q3'
-                csvYr = '20'+link['href'].split('/')[-2][2:4]
-            if 'ApriltoJune' in link['href']:
-                csvMth = 'Q2'
-                csvYr = '20'+link['href'].split('/')[-2][2:4]
-            if 'January%20to%20March' in link['href']:
-                csvMth = 'Q1'
-                csvYr = '20'+link['href'].split('/')[-2][2:4]
-        csvMth = convert_mth_strings(csvMth.upper())
-        data.append([csvYr, csvMth, url])
 
 #### STORE DATA 1.0
 

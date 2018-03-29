@@ -38,12 +38,12 @@ def validateFilename(filename):
 
 def validateURL(url):
     try:
-        r = requests.get(url, headers=ua)
+        r = requests.get(url)
         count = 1
         while r.status_code == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = requests.get(url, headers=ua)
+            r = requests.get(url)
         sourceFilename = r.headers.get('Content-Disposition')
 
         if sourceFilename:
@@ -51,11 +51,12 @@ def validateURL(url):
         else:
             ext = os.path.splitext(url)[1]
         validURL = r.status_code == 200
-        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
+        validFiletype = ext.lower() in ['.csv', '.xls', '.zip', '.xlsx', '.pdf']
         return validURL, validFiletype
     except:
         print ("Error validating URL.")
         return False, False
+
 
 
 def validate(filename, file_url):
@@ -84,26 +85,27 @@ def convert_mth_strings ( mth_string ):
 
 #### VARIABLES 1.0
 
-entity_id = "NWR004_NR_gov"
-url = "https://www.networkrail.co.uk/who-we-are/transparency-and-ethics/transparency/datasets/"
+entity_id = "FTRWXX_BHNFT_gov"
+url = "https://www.berkshirehealthcare.nhs.uk/about-us/key-documents/investing-money-in-your-care/"
 errors = 0
 data = []
-ua = {'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'}
 
 #### READ HTML 1.0
-import requests
-html = requests.get(url, headers=ua)
-soup = BeautifulSoup(html.text, 'lxml')
+
+html = urllib2.urlopen(url)
+soup = BeautifulSoup(html, 'lxml')
 
 
 #### SCRAPE DATA
-blocks = soup.find('button', text=re.compile('Spend over ')).find_next('div').find_all('ul')
+
+
+blocks = soup.find('div', id='wide-col').find_all('ul')
 for block in blocks:
     links = block.find_all('a')
     for link in links:
         if '.csv' in link['href'] or '.xls' in link['href'] or '.xlsx' in link['href']:
             title = link.text.strip()
-            url = link['href']
+            url = 'https://www.berkshirehealthcare.nhs.uk'+link['href']
             csvMth = title.split()[-2].strip()[:3]
             csvYr = title.split()[-1].strip()[:4]
             csvMth = convert_mth_strings(csvMth.upper())

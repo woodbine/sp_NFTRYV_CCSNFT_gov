@@ -103,7 +103,7 @@ for block in blocks:
     titles.append(title)
     csvMth = title.split()[0][:3]
     csvYr = title.split()[1]
-    if ' & ' in title:
+    if ' & ' in title or 'February and March 2018' in title:
         csvMth = 'Q0'
         csvYr = '2018'
     csvMth = convert_mth_strings(csvMth.upper())
